@@ -56,6 +56,21 @@ describe("Pharmacy", () => {
       });
     });
 
+    // "Magic Pill" never expires nor decreases in Benefit.
+    describe("Magic Pill", () => {
+      it("neither increases nor decreases its benefit", () => {
+        expect(
+          new Pharmacy([new Drug("Magic Pill", 10, 15)]).updateBenefitValue()
+        ).toEqual([new Drug("Magic Pill", 10, 15)]);
+        expect(
+          new Pharmacy([new Drug("Magic Pill", 9, 15)]).updateBenefitValue()
+        ).toEqual([new Drug("Magic Pill", 9, 15)]);
+        expect(
+          new Pharmacy([new Drug("Magic Pill", 0, 12)]).updateBenefitValue()
+        ).toEqual([new Drug("Magic Pill", 0, 12)]);
+      });
+    });
+
     // @deprecated
     it("should decrease the benefit and expiresIn", () => {
       expect(
