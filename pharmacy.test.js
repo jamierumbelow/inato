@@ -7,8 +7,6 @@ describe("Pharmacy", () => {
    */
 
   describe("system specifications", () => {
-    // The Benefit of an item is never more than 50.
-    // "Magic Pill" never expires nor decreases in Benefit.
     // "Fervex", like Herbal Tea, increases in Benefit as its expiration date approaches. Benefit increases by 2 when there are 10 days or less and by 3 when there are 5 days or less but Benefit drops to 0 after the expiration date.
   });
 
@@ -34,6 +32,28 @@ describe("Pharmacy", () => {
       expect(
         new Pharmacy([new Drug("test", 0, 0)]).updateBenefitValue()
       ).toEqual([new Drug("test", -1, 0)]);
+    });
+
+    // The benefit of an item is never more than 50.
+    it("should never allow a benefit greater than 50", () => {
+      expect(
+        new Pharmacy([new Drug("Herbal Tea", 5, 49)]).updateBenefitValue()
+      ).toEqual([new Drug("Herbal Tea", 4, 50)]);
+      expect(
+        new Pharmacy([new Drug("Herbal Tea", 4, 50)]).updateBenefitValue()
+      ).toEqual([new Drug("Herbal Tea", 3, 50)]);
+    });
+
+    // "Herbal Tea" actually increases in benefit the older it gets
+    describe("Herbal Tea", () => {
+      it("increases in benefit the older it gets", () => {
+        expect(
+          new Pharmacy([new Drug("Herbal Tea", 10, 1)]).updateBenefitValue()
+        ).toEqual([new Drug("Herbal Tea", 9, 2)]);
+        expect(
+          new Pharmacy([new Drug("Herbal Tea", 9, 2)]).updateBenefitValue()
+        ).toEqual([new Drug("Herbal Tea", 8, 3)]);
+      });
     });
 
     // @deprecated
