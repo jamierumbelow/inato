@@ -7,7 +7,6 @@ describe("Pharmacy", () => {
    */
 
   describe("system specifications", () => {
-    // Once the expiration date has passed, Benefit degrades twice as fast.
     // The Benefit of an item is never negative.
     // "Herbal Tea" actually increases in Benefit the older it gets,
     // The Benefit of an item is never more than 50.
@@ -16,6 +15,19 @@ describe("Pharmacy", () => {
   });
 
   describe("updateBenefitValue", () => {
+    // Once the expiration date has passed, Benefit degrades twice as fast.
+    it("should degrade benefit by two when the expiration date has passed, once otherwise", () => {
+      // One day away from expiration, benefit = 10 -> new benefit = 9
+      expect(
+        new Pharmacy([new Drug("test", 1, 10)]).updateBenefitValue()
+      ).toEqual([new Drug("test", 0, 9)]);
+
+      // Expiration date, benefit = 9 -> new benefit = 7
+      expect(
+        new Pharmacy([new Drug("test", 0, 9)]).updateBenefitValue()
+      ).toEqual([new Drug("test", -1, 7)]);
+    });
+
     // @deprecated
     it("should decrease the benefit and expiresIn", () => {
       expect(
