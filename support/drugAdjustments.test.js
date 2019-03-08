@@ -1,4 +1,4 @@
-import { calculateNewBenefit } from "./drugAdjustments";
+import { calculateNewBenefit, calculateNewExpiresIn } from "./drugAdjustments";
 
 describe("calculateNewBenefit", () => {
   describe("Herbal Tea", () => {
@@ -35,6 +35,27 @@ describe("calculateNewBenefit", () => {
   });
 });
 
+describe("calculateNewExpiresIn", () => {
+  describe("Magic Pill", () => {
+    it("doesn't expire", () => {
+      expect(calculateNewExpiresIn("Magic Pill", 100)).toEqual(100);
+      expect(calculateNewExpiresIn("Magic Pill", 10)).toEqual(10);
+      expect(calculateNewExpiresIn("Magic Pill", 1)).toEqual(1);
+      expect(calculateNewExpiresIn("Magic Pill", 0)).toEqual(0);
+    });
+  });
+
+  describe("everything else", () => {
+    itExpires("Herbal Tea");
+    itExpires("Fervex");
+    itExpires("Doliprane");
+  });
+});
+
+/**
+ * Drug adjustment-specific assertions
+ */
+
 function itNeverGoesAbove50(drugName) {
   it("never goes above 50", () => {
     expect(calculateNewBenefit(drugName, 49, 10)).toEqual(50);
@@ -48,5 +69,17 @@ function itNeverGoesBelow0(drugName) {
     expect(calculateNewBenefit(drugName, 1, 10)).toEqual(0);
     expect(calculateNewBenefit(drugName, 0, 5)).toEqual(0);
     expect(calculateNewBenefit(drugName, -1, 2)).toEqual(0);
+  });
+}
+
+function itExpires(drugName) {
+  describe(drugName, () => {
+    it("expires", () => {
+      expect(calculateNewExpiresIn(drugName, 100)).toEqual(99);
+      expect(calculateNewExpiresIn(drugName, 10)).toEqual(9);
+      expect(calculateNewExpiresIn(drugName, 1)).toEqual(0);
+      expect(calculateNewExpiresIn(drugName, 0)).toEqual(-1);
+      expect(calculateNewExpiresIn(drugName, -5)).toEqual(-6);
+    });
   });
 }
