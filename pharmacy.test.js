@@ -6,10 +6,22 @@ describe("Pharmacy", () => {
    * Functional Tests
    */
 
-  it("should decrease the benefit and expiresIn", () => {
-    expect(new Pharmacy([new Drug("test", 2, 3)]).updateBenefitValue()).toEqual(
-      [new Drug("test", 1, 2)]
-    );
+  describe("system specifications", () => {
+    // Once the expiration date has passed, Benefit degrades twice as fast.
+    // The Benefit of an item is never negative.
+    // "Herbal Tea" actually increases in Benefit the older it gets,
+    // The Benefit of an item is never more than 50.
+    // "Magic Pill" never expires nor decreases in Benefit.
+    // "Fervex", like Herbal Tea, increases in Benefit as its expiration date approaches. Benefit increases by 2 when there are 10 days or less and by 3 when there are 5 days or less but Benefit drops to 0 after the expiration date.
+  });
+
+  describe("updateBenefitValue", () => {
+    // @deprecated
+    it("should decrease the benefit and expiresIn", () => {
+      expect(
+        new Pharmacy([new Drug("test", 2, 3)]).updateBenefitValue()
+      ).toEqual([new Drug("test", 1, 2)]);
+    });
   });
 
   /**
