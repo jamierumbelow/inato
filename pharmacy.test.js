@@ -6,10 +6,6 @@ describe("Pharmacy", () => {
    * Functional Tests
    */
 
-  describe("system specifications", () => {
-    // "Fervex", like Herbal Tea, increases in Benefit as its expiration date approaches. Benefit increases by 2 when there are 10 days or less and by 3 when there are 5 days or less but Benefit drops to 0 after the expiration date.
-  });
-
   describe("updateBenefitValue", () => {
     // Once the expiration date has passed, Benefit degrades twice as fast.
     it("should degrade benefit by two when the expiration date has passed, once otherwise", () => {
@@ -71,11 +67,42 @@ describe("Pharmacy", () => {
       });
     });
 
-    // @deprecated
-    it("should decrease the benefit and expiresIn", () => {
-      expect(
-        new Pharmacy([new Drug("test", 2, 3)]).updateBenefitValue()
-      ).toEqual([new Drug("test", 1, 2)]);
+    // "Fervex", like Herbal Tea, increases in Benefit as its expiration date approaches.
+    // Benefit increases by 2 when there are 10 days or less and by 3 when there
+    // are 5 days or less but Benefit drops to 0 after the expiration date.
+    describe("Fervex", () => {
+      it("increases its benefit by 2 when there are 10 days or less", () => {
+        expect(
+          new Pharmacy([new Drug("Fervex", 11, 15)]).updateBenefitValue()
+        ).toEqual([new Drug("Fervex", 10, 16)]);
+        expect(
+          new Pharmacy([new Drug("Fervex", 10, 14)]).updateBenefitValue()
+        ).toEqual([new Drug("Fervex", 9, 16)]);
+        expect(
+          new Pharmacy([new Drug("Fervex", 9, 10)]).updateBenefitValue()
+        ).toEqual([new Drug("Fervex", 8, 12)]);
+      });
+
+      it("increases its benefit by 3 when there are 5 days or less", () => {
+        expect(
+          new Pharmacy([new Drug("Fervex", 6, 15)]).updateBenefitValue()
+        ).toEqual([new Drug("Fervex", 5, 17)]);
+        expect(
+          new Pharmacy([new Drug("Fervex", 5, 14)]).updateBenefitValue()
+        ).toEqual([new Drug("Fervex", 4, 17)]);
+        expect(
+          new Pharmacy([new Drug("Fervex", 1, 10)]).updateBenefitValue()
+        ).toEqual([new Drug("Fervex", 0, 13)]);
+      });
+
+      it("can't jump above 50", () => {
+        expect(
+          new Pharmacy([new Drug("Fervex", 7, 49)]).updateBenefitValue()
+        ).toEqual([new Drug("Fervex", 6, 50)]);
+        expect(
+          new Pharmacy([new Drug("Fervex", 1, 49)]).updateBenefitValue()
+        ).toEqual([new Drug("Fervex", 0, 50)]);
+      });
     });
   });
 
