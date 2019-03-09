@@ -3,6 +3,17 @@ import { calculateNewBenefit, calculateNewExpiresIn } from "./drugAdjustments";
 describe("calculateNewBenefit", () => {
   describe("Herbal Tea", () => {
     itNeverGoesAbove50("Herbal Tea");
+
+    it("increases in benefit", () => {
+      expect(calculateNewBenefit("Herbal Tea", 10)).toEqual(11);
+    });
+
+    // @todo bug or undocumented feature?
+    it("increases in benefit by 2 after expiry", () => {
+      expect(calculateNewBenefit("Herbal Tea", 10, 1)).toEqual(11);
+      expect(calculateNewBenefit("Herbal Tea", 10, 0)).toEqual(12);
+      expect(calculateNewBenefit("Herbal Tea", 5, -2)).toEqual(7);
+    });
   });
 
   describe("Magic Pill", () => {
@@ -28,10 +39,22 @@ describe("calculateNewBenefit", () => {
       expect(calculateNewBenefit("Fervex", 10, 5)).toEqual(13);
       expect(calculateNewBenefit("Fervex", 30, 1)).toEqual(33);
     });
+
+    it("resets its benefit to 0 when expired", () => {
+      expect(calculateNewBenefit("Fervex", 1, 1)).toEqual(4);
+      expect(calculateNewBenefit("Fervex", 1, 0)).toEqual(0);
+      expect(calculateNewBenefit("Fervex", 50, 0)).toEqual(0);
+    });
   });
 
   describe("Doliprane", () => {
     itNeverGoesBelow0("Doliprane");
+
+    it("decreases benefit at a faster rate after expiry", () => {
+      expect(calculateNewBenefit("Doliprane", 10, 1)).toEqual(9);
+      expect(calculateNewBenefit("Doliprane", 10, 0)).toEqual(8);
+      expect(calculateNewBenefit("Doliprane", 6, -1)).toEqual(4);
+    });
   });
 });
 

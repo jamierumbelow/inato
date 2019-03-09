@@ -1,11 +1,20 @@
 const benefitCalculators = {
-  "Herbal Tea": oldBenefit => {
-    return Math.min(oldBenefit + 1, 50);
+  "Herbal Tea": (oldBenefit, expiresIn) => {
+    let delta = 1;
+    if (expiresIn <= 0) {
+      delta = 2;
+    }
+
+    return Math.min(oldBenefit + delta, 50);
   },
 
   "Magic Pill": oldBenefit => oldBenefit,
 
   Fervex: (oldBenefit, expiresIn) => {
+    if (expiresIn <= 0) {
+      return 0;
+    }
+
     let delta = 1;
     if (expiresIn <= 5) {
       delta = 3;
@@ -30,7 +39,12 @@ export function calculateNewBenefit(drugName, oldBenefit, expiresIn) {
     return benefitCalculators[drugName](oldBenefit, expiresIn);
   }
 
-  return Math.max(0, oldBenefit - 1);
+  let delta = 1;
+  if (expiresIn <= 0) {
+    delta = 2;
+  }
+
+  return Math.max(0, oldBenefit - delta);
 }
 
 /**
