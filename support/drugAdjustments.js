@@ -1,15 +1,21 @@
-const benefitCalculators = {
-  "Herbal Tea": (oldBenefit, expiresIn) => {
-    let delta = 1;
-    if (expiresIn <= 0) {
-      delta = 2;
-    }
+import _get from "lodash/get";
 
-    return Math.min(oldBenefit + delta, 50);
+/**
+ * Calculators for new benefit and expiry values
+ */
+
+const benefitCalculators = {
+  // Herbal Tea increases by 1. If it has expired, it increases by 2.
+  "Herbal Tea": (oldBenefit, expiresIn) => {
+    let delta = expiresIn <= 0 ? 2 : 1;
+    return oldBenefit + delta;
   },
 
+  // Magic pill never degrades
   "Magic Pill": oldBenefit => oldBenefit,
 
+  // Fervex increases by 1. If it's within 10 days of expiry, it increases
+  // by 2. If it's within 5 days of expiry, it increases by 3. If it expires, it's 0.
   Fervex: (oldBenefit, expiresIn) => {
     if (expiresIn <= 0) {
       return 0;
@@ -22,14 +28,21 @@ const benefitCalculators = {
       delta = 2;
     }
 
-    return Math.min(oldBenefit + delta, 50);
+    return oldBenefit + delta;
   },
 
-  Dafalgan: oldBenefit => Math.max(oldBenefit - 2, 0)
+  // Dafalgan decreases by 2
+  Dafalgan: oldBenefit => oldBenefit - 2,
+
+  // Everything else decreases by 1. If it's expired, it decreases by 2.
+  _default: (oldBenefit, expiresIn) => {
+    return expiresIn <= 0 ? oldBenefit - 2 : oldBenefit - 1;
+  }
 };
 
 const expiryCalculators = {
-  "Magic Pill": expiresIn => expiresIn
+  "Magic Pill": expiresIn => expiresIn,
+  _default: expiresIn => expiresIn - 1
 };
 
 /**
@@ -37,16 +50,13 @@ const expiryCalculators = {
  * @return int
  */
 export function calculateNewBenefit(drugName, oldBenefit, expiresIn) {
-  if (benefitCalculators[drugName]) {
-    return benefitCalculators[drugName](oldBenefit, expiresIn);
-  }
+  const newBenefit = _get(
+    benefitCalculators,
+    drugName,
+    benefitCalculators._default
+  )(oldBenefit, expiresIn);
 
-  let delta = 1;
-  if (expiresIn <= 0) {
-    delta = 2;
-  }
-
-  return Math.max(0, oldBenefit - delta);
+  return Math.max(0, Math.min(newBenefit, 50));
 }
 
 /**
@@ -54,9 +64,7 @@ export function calculateNewBenefit(drugName, oldBenefit, expiresIn) {
  * @return int
  */
 export function calculateNewExpiresIn(drugName, expiresIn) {
-  if (expiryCalculators[drugName]) {
-    return expiryCalculators[drugName](expiresIn);
-  }
-
-  return expiresIn - 1;
+  return _get(expiryCalculators, drugName, expiryCalculators._default)(
+    expiresIn
+  );
 }
