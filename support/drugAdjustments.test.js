@@ -49,11 +49,18 @@ describe("calculateNewBenefit", () => {
 
   describe("Doliprane", () => {
     itNeverGoesBelow0("Doliprane");
+    itDecreasesBenefitTwiceAsFastAfterExpiry("Doliprane");
+  });
 
-    it("decreases benefit at a faster rate after expiry", () => {
-      expect(calculateNewBenefit("Doliprane", 10, 1)).toEqual(9);
-      expect(calculateNewBenefit("Doliprane", 10, 0)).toEqual(8);
-      expect(calculateNewBenefit("Doliprane", 6, -1)).toEqual(4);
+  describe("Dafalgan", () => {
+    itNeverGoesBelow0("Dafalgan");
+
+    it("decreases benefit twice as fast as normal", () => {
+      expect(calculateNewBenefit("Dafalgan", 10, 15)).toEqual(8);
+      expect(calculateNewBenefit("Dafalgan", 9, 15)).toEqual(7);
+      expect(calculateNewBenefit("Dafalgan", 1, 10)).toEqual(0);
+      expect(calculateNewBenefit("Dafalgan", 10, -1)).toEqual(8);
+      expect(calculateNewBenefit("Dafalgan", 1, -1)).toEqual(0);
     });
   });
 });
@@ -103,6 +110,16 @@ function itExpires(drugName) {
       expect(calculateNewExpiresIn(drugName, 1)).toEqual(0);
       expect(calculateNewExpiresIn(drugName, 0)).toEqual(-1);
       expect(calculateNewExpiresIn(drugName, -5)).toEqual(-6);
+    });
+  });
+}
+
+function itDecreasesBenefitTwiceAsFastAfterExpiry(drugName) {
+  describe(drugName, () => {
+    it("decreases benefit at a faster rate after expiry", () => {
+      expect(calculateNewBenefit(drugName, 10, 1)).toEqual(9);
+      expect(calculateNewBenefit(drugName, 10, 0)).toEqual(8);
+      expect(calculateNewBenefit(drugName, 6, -1)).toEqual(4);
     });
   });
 }

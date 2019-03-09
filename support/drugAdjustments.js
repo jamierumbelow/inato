@@ -23,7 +23,9 @@ const benefitCalculators = {
     }
 
     return Math.min(oldBenefit + delta, 50);
-  }
+  },
+
+  Dafalgan: oldBenefit => Math.max(oldBenefit - 2, 0)
 };
 
 const expiryCalculators = {
